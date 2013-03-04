@@ -48,6 +48,7 @@ gem 'devise'
 gem 'jquery-rails'
 gem 'simple_form'
 gem 'epub-parser'
+gem "jquery-fileupload-rails"
 
 
 # To use ActiveModel has_secure_password

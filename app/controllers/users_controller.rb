@@ -10,9 +10,10 @@ class UsersController < ApplicationController
       book_file = params[:user].delete(:file)
 
       current_user.add_book(book_file) if book_file
+      @book = current_user.books.last
     end
 
-    redirect_to user_path(current_user)
+    # redirect_to user_path(current_user)
   end
 
 end

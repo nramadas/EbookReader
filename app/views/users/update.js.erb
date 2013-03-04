@@ -1,0 +1,6 @@
+alert("hello");
+console.log("this");
+<% if @book %>
+  console.log("that");
+  $("#books").append(<%= link_to @book.title, book_path(@book), class: "book" %>);
+<% end %>

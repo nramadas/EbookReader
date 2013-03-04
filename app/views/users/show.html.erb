@@ -1,18 +1,31 @@
-<h1>Current books:</h1>
-<% @user.books.each do |book| %>
-  <p>
-    <%= link_to book.title, book_path(book) %>
-  </p>
-<% end %>
-<h2>Add a book:</h2>
-<%= form_for(@user) do |f| %>
-  <p>
-    <%= f.label :file %>
-    <%= f.file_field :file %>
-  </p>
-  </p>
-    <%= f.submit %>
-  </p>
-<% end %>
+<div id="backdrop"></div>
+<div id="user-page">
+  <div id="books">
+    <% @user.books.each do |book| %>
+      <%= link_to book.title, book_path(book), class: "book" %>
+    <% end %>
+  </div>
+  <%= form_for(@user, html: { multipart: true, id: "fileupload"  }) do |f| %>
+    <div class="addfile">
+      Drag books onto bookshelf or click to add
+      <%= f.file_field :file %>
+    </div>
+  <% end %>
+  <div style="clear:both"></div>
 
-<%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+  <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+</div>
+
+<script>
+  $(function() {
+    var r = function() { return Math.floor(Math.random() * 100 + 100) };
+
+    $('#fileupload').fileupload({
+      dataType: 'script'
+    });
+
+    $(".book").css("background", function() {
+      return "rgb(" + r() + "," + r() + "," + r() + ")";
+    });
+  });
+</script>
