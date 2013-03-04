@@ -2,7 +2,7 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-@import url(http://fonts.googleapis.com/css?family=Gilda+Display);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Poly);
 
 body {
   background: image-url("ova.png");
@@ -17,17 +17,38 @@ body {
   z-index: -1;
   top: 0;
   left: 0;
-  margin: 2.5%;
-  width: 95%;
-  height: 90%;
+  margin-left: 1.5%;
+  margin-top: 1.5%;
+  width: 97%;
+  height: 95%;
   background: #F6F3EE;
   box-shadow: 0 0 10px 2px #707070;
   border-radius: 2px;
 }
 
 #display {
-  font-family: 'Gilda Display', serif;
-  font-size: 110%;
-  margin: 2.5%;
+  font-family: 'Poly', serif;
+
+  h1, h2, h3 {
+    font-family: 'Open Sans Condensed';
+  }
+
+  h1 {
+    font-size: 250%;
+  }
+
+  h2 {
+    font-size: 200%;
+  }
+
+  h3 {
+    font-size: 150%;
+  }
+
+  font-size: 130%;
+  margin-top: 2.5%;
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  line-height: 150%;
   padding: 20px;
 }

@@ -114,14 +114,13 @@
       currentChapter = Chapter.all[Chapter.currentIndex]
 
       if currentChapter.paragraphEndIndex >= currentChapter.totalParagraphs
-        Chapter.currentIndex++
+        unless Chapter.currentIndex == Chapter.all.length - 1
+          Chapter.currentIndex++
+
         currentChapter = Chapter.all[Chapter.currentIndex]
 
       pIndex = currentChapter.paragraphEndIndex
       currentChapter.paragraphStartIndex = pIndex
-      
-      console.log("next")
-      console.log(currentChapter)
 
       while true
         paragraph = currentChapter.paragraphs[pIndex]
@@ -145,14 +144,13 @@
 
       if currentChapter.paragraphStartIndex <= 0
         currentChapter.paragraphEndIndex = 0
-        Chapter.currentIndex--
+        if Chapter.currentIndex > 0
+          Chapter.currentIndex--
+
         return that.currentPage()
       
       currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex
       pIndex = currentChapter.paragraphStartIndex - 1
-
-      console.log("previous")
-      console.log(currentChapter)
 
       while true
         paragraph = currentChapter.paragraphs[pIndex]
@@ -168,7 +166,6 @@
           paragraph.remove()
           currentChapter.paragraphStartIndex = pIndex + 2
           break
-
 
     return
 
