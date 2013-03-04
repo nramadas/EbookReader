@@ -1,0 +1,12 @@
+<div id="backdrop"></div>
+<div id="display"></div>
+
+<script>
+  $(function() {
+
+    var book = new Book.Display($("#display"), <%= @book.id %>);
+    book.loadBook();
+
+
+  });
+</script>

@@ -1,0 +1,18 @@
+<h1>Current books:</h1>
+<% @user.books.each do |book| %>
+  <p>
+    <%= link_to book.title, book_path(book) %>
+  </p>
+<% end %>
+<h2>Add a book:</h2>
+<%= form_for(@user) do |f| %>
+  <p>
+    <%= f.label :file %>
+    <%= f.file_field :file %>
+  </p>
+  </p>
+    <%= f.submit %>
+  </p>
+<% end %>
+
+<%= link_to "Sign Out", destroy_user_session_path, method: :delete %>

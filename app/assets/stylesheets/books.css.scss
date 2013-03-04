@@ -1,0 +1,33 @@
+// Place all the styles related to the Books controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+@import url(http://fonts.googleapis.com/css?family=Gilda+Display);
+
+body {
+  background: image-url("ova.png");
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#backdrop {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  margin: 2.5%;
+  width: 95%;
+  height: 90%;
+  background: #F6F3EE;
+  box-shadow: 0 0 10px 2px #707070;
+  border-radius: 2px;
+}
+
+#display {
+  font-family: 'Gilda Display', serif;
+  font-size: 110%;
+  margin: 2.5%;
+  padding: 20px;
+}
