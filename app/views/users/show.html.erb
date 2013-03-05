@@ -1,3 +1,10 @@
+<div id="topshelf">
+  <div class="title">Simple Reader</div>
+  <%= link_to(destroy_user_session_path, method: :delete, class: "signout") do %>
+      Sign Out
+      <div class="door"></div>
+  <% end %>
+</div>
 <div id="bookshelf"></div>
 <div id="user-page">
   <div id="books">
@@ -15,8 +22,6 @@
     </div>
   <% end %>
 
-  <%= link_to "Exit", destroy_user_session_path, method: :delete,
-      class: "signout" %>
   
 </div>
 
@@ -52,10 +57,10 @@
       return "rgb(" + r() + "," + r() + "," + r() + ")";
     });
 
-    $("#bookshelf").height($(window).height() - 5 + "px");
+    $("#bookshelf").height($(document).height() - 55 + "px");
 
     $(window).resize(function() {
-      $("#bookshelf").height($(window).height() - 5 + "px");
+      $("#bookshelf").height($(document).height() - 55 + "px");
     });
 
   });

@@ -73,6 +73,7 @@
     @chapterIds = null
     @parStart = parStart
     @parEnd = parEnd
+    @timer = null
 
     @bindKeys = () ->
       key("right", () ->
@@ -96,11 +97,26 @@
         $(location).attr('href','/')
       )
 
+    @bindMouse = () ->
+      $(document).mousemove(() ->
+        window.clearTimeout(that.timer) if that.timer
+        $("#back").children().fadeIn('slow', 'swing');
+        $("#next").children().fadeIn('slow', 'swing');
+        $("#prev").children().fadeIn('slow', 'swing');
+
+        that.timer = window.setTimeout(() ->
+          $("#back").children().fadeOut('slow', 'swing');
+          $("#next").children().fadeOut('slow', 'swing');
+          $("#prev").children().fadeOut('slow', 'swing');
+        , 1000)
+      )
+
     @loadBook = () =>
       Chapter.currentIndex = currentChapter
 
       @bindKeys()
       @bindClicks()
+      @bindMouse()
 
       $(window).resize(() ->
         that.printPage()
@@ -154,8 +170,6 @@
             break
 
       else
-        console.log(Chapter.currentIndex)
-
         currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex
         pIndex = currentChapter.paragraphStartIndex - 1
 

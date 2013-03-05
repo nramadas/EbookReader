@@ -1,8 +1,14 @@
 <div id="backdrop"></div>
 <div id="display"></div>
-<div id="back"></div>
-<div id="next"></div>
-<div id="prev"></div>
+<div id="back">
+  <div class="backDisplay">Return to bookshelf</div>
+</div>
+<div id="next">
+  <div class="nextDisplay">Next Page &#9658;</div>
+</div>
+<div id="prev">
+  <div class="prevDisplay">&#9668; Prev Page</div>
+</div>
 
 <script>
   $(function() {
@@ -13,6 +19,10 @@
                                 <%= @book_ownership.start_paragraph %>, 
                                 <%= @book_ownership.end_paragraph %>);
     book.loadBook();
+
+    $("#back").children().hide();
+    $("#next").children().hide();
+    $("#prev").children().hide();
 
   });
 
