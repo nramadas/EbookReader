@@ -1,0 +1,2 @@
+module BookOwnershipsHelper
+end

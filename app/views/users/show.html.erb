@@ -1,31 +1,70 @@
-<div id="backdrop"></div>
+<div id="bookshelf"></div>
 <div id="user-page">
   <div id="books">
     <% @user.books.each do |book| %>
       <%= link_to book.title, book_path(book), class: "book" %>
     <% end %>
   </div>
+
+  <div id="pro"></div>
+  
   <%= form_for(@user, html: { multipart: true, id: "fileupload"  }) do |f| %>
     <div class="addfile">
       Drag books onto bookshelf or click to add
       <%= f.file_field :file %>
     </div>
   <% end %>
-  <div style="clear:both"></div>
 
-  <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+  <%= link_to "Exit", destroy_user_session_path, method: :delete,
+      class: "signout" %>
+  
 </div>
+
+<script id="template-upload" type="text/x-tmpl">
+  <div class="upload">
+    {%=o.name%}
+    <div class="progress">
+      <div class="bar" style="width: 0%;"></div>
+    </div>
+  </div>
+</script>
 
 <script>
   $(function() {
-    var r = function() { return Math.floor(Math.random() * 100 + 100) };
+    var r = function() { return Math.floor(Math.random() * 100 + 50) };
 
     $('#fileupload').fileupload({
-      dataType: 'script'
+      dataType: 'script',
+      add: function(e, data) {
+        data.context = $(tmpl("template-upload", data.files[0]).trim());
+        $('#pro').append(data.context);
+        data.submit()
+      },
+      progress: function(e, data) {
+        if (data.context) {
+          var progress = parseInt(data.loaded / data.total * 100, 10);
+          data.context.find(".bar").css('width', progress + "%");
+        }
+      }
     });
 
     $(".book").css("background", function() {
       return "rgb(" + r() + "," + r() + "," + r() + ")";
     });
+
+    $("#bookshelf").height($(window).height() - 5 + "px");
+
+    $(window).resize(function() {
+      $("#bookshelf").height($(window).height() - 5 + "px");
+    });
+
+  });
+
+  $(window).on("unload", function() {
+    $(document).empty();
+  });
+
+  $(window).on("beforeunload", function() {
+    $(document).empty();
   });
 </script>

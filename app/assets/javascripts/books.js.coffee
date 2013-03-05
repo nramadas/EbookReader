@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 @Book = (() ->
-  Chapter = (text) ->
+  Chapter = (text, prev, parStart, parEnd) ->
     that = this
 
     @text = text
@@ -17,13 +17,19 @@
       that.totalParagraphs++
     )
 
+    if prev == -1 # this chapter is before the current one
+      that.paragraphStartIndex = that.totalParagraphs - 1
+    else if prev == 0 # this chapter is the current one
+      that.paragraphStartIndex = parStart
+      that.paragraphEndIndex = parEnd
+
     return
 
   Chapter.ids = []
 
   Chapter.all = []
 
-  Chapter.currentIndex = 0
+  Chapter.currentIndex = 3
 
   Chapter.fetchRemaining = (val, skip) ->
     unless val >= Chapter.ids.length
@@ -31,7 +37,9 @@
         $.getJSON(
           "/chapters/" + Chapter.ids[val] + ".json",
           (data) ->
-            Chapter.all[val] = new Chapter(data.text)
+            prev = if (val < skip) then -1 else 1
+
+            Chapter.all[val] = new Chapter(data.text, prev)
 
             Chapter.fetchRemaining(val + 1, skip)
         )
@@ -40,11 +48,12 @@
 
     return
 
-  Chapter.fetch = (callback) ->
+  Chapter.fetch = (currentChapter, parStart, parEnd, callback) ->
     $.getJSON(
       "/chapters/" + Chapter.ids[Chapter.currentIndex] + ".json",
       (data) ->
-        Chapter.all[Chapter.currentIndex] = new Chapter(data.text)
+        Chapter.all[Chapter.currentIndex] = new Chapter(data.text, 0,
+                                                        parStart, parEnd)
 
         skip = Chapter.currentIndex # captured incase the callback changes it
 
@@ -55,14 +64,17 @@
 
     return
 
-  Display = (element, bookId) ->
+  Display = (element, bookId, ownershipId, currentChapter, parStart, parEnd) ->
     that = this
 
     @element = element
     @bookId = bookId
+    @ownershipId = ownershipId
     @chapterIds = null
+    @parStart = parStart
+    @parEnd = parEnd
 
-    @loadBook = () ->
+    @bindKeys = () ->
       key("right", () ->
         that.nextPage()
       )
@@ -71,11 +83,41 @@
         that.previousPage()
       )
 
-      $(window).resize(() ->
-        that.currentPage()
+    @bindClicks = () ->
+      $("#next").click(()->
+        that.nextPage()
       )
 
-      that.fetchBook(that.nextPage)
+      $("#prev").click(()->
+        that.previousPage()
+      )
+
+      $("#back").click(()->
+        $(location).attr('href','/')
+      )
+
+    @loadBook = () =>
+      Chapter.currentIndex = currentChapter
+
+      @bindKeys()
+      @bindClicks()
+
+      $(window).resize(() ->
+        that.printPage()
+      )
+
+      that.fetchBook(that.printPage)
+
+    @saveState = () ->
+      currentChapter = Chapter.all[Chapter.currentIndex]
+
+      $.ajax({
+        url: "/book_ownerships/" + that.ownershipId,
+        type: "PUT",
+        data: "current_chapter=" + Chapter.currentIndex +
+              "&start_paragraph=" + currentChapter.paragraphStartIndex +
+              "&end_paragraph=" + currentChapter.paragraphEndIndex
+      })
 
     @fetchBook = (callback) ->
       $.getJSON(
@@ -83,33 +125,59 @@
         (data) ->
           that.chapterIds = data.chapter_ids
           Chapter.ids = data.chapter_ids
-          Chapter.fetch(callback)
+          Chapter.fetch(that.currentChapter, that.parStart,
+                        that.parEnd, callback)
       )
 
-    @currentPage = () ->
-      that.element.empty()
+    @printPage = (inChapter) =>
+      @element.empty()
 
       currentChapter = Chapter.all[Chapter.currentIndex]
 
-      pIndex = currentChapter.paragraphStartIndex
+      if currentChapter.paragraphEndIndex >= currentChapter.paragraphStartIndex
+        pIndex = currentChapter.paragraphStartIndex
+        currentChapter.paragraphStartIndex = pIndex
 
-      while true
-        paragraph = currentChapter.paragraphs[pIndex]
-        pIndex++
+        while true
+          paragraph = currentChapter.paragraphs[pIndex]
+          pIndex++
 
-        that.element.append(paragraph)
+          @element.append(paragraph)
 
-        if that.element.height() > $("#backdrop").height() - 20
-          paragraph.remove()
-          currentChapter.paragraphEndIndex = pIndex - 1
-          break
+          if @element.height() > $("#backdrop").height() - 50
+            paragraph.remove()
+            currentChapter.paragraphEndIndex = pIndex - 1
+            break
 
-        if pIndex >= currentChapter.totalParagraphs
-          currentChapter.paragraphEndIndex = currentChapter.totalParagraphs
-          break
+          if pIndex >= currentChapter.totalParagraphs
+            currentChapter.paragraphEndIndex = currentChapter.totalParagraphs
+            break
 
-    @nextPage = () ->
-      that.element.empty()
+      else
+        console.log(Chapter.currentIndex)
+
+        currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex
+        pIndex = currentChapter.paragraphStartIndex - 1
+
+        while true
+          paragraph = currentChapter.paragraphs[pIndex]
+          pIndex--
+
+          @element.prepend(paragraph)
+
+          if pIndex < 0
+            currentChapter.paragraphStartIndex = 0
+            break
+          
+          if @element.height() > $("#backdrop").height() - 50
+            paragraph.remove()
+            currentChapter.paragraphStartIndex = pIndex + 2
+            break
+
+      @saveState()
+
+    @nextPage = () =>
+      @element.empty()
 
       currentChapter = Chapter.all[Chapter.currentIndex]
 
@@ -119,26 +187,12 @@
 
         currentChapter = Chapter.all[Chapter.currentIndex]
 
-      pIndex = currentChapter.paragraphEndIndex
-      currentChapter.paragraphStartIndex = pIndex
+      currentChapter.paragraphStartIndex = currentChapter.paragraphEndIndex
 
-      while true
-        paragraph = currentChapter.paragraphs[pIndex]
-        pIndex++
+      @printPage()
 
-        that.element.append(paragraph)
-
-        if that.element.height() > $("#backdrop").height() - 20
-          paragraph.remove()
-          currentChapter.paragraphEndIndex = pIndex - 1
-          break
-
-        if pIndex >= currentChapter.totalParagraphs
-          currentChapter.paragraphEndIndex = currentChapter.totalParagraphs
-          break
-
-    @previousPage = () ->
-      that.element.empty()
+    @previousPage = () =>
+      @element.empty()
 
       currentChapter = Chapter.all[Chapter.currentIndex]
 
@@ -147,30 +201,15 @@
         if Chapter.currentIndex > 0
           Chapter.currentIndex--
 
-        return that.currentPage()
+        return @printPage()
       
-      currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex
-      pIndex = currentChapter.paragraphStartIndex - 1
+      currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex - 1
 
-      while true
-        paragraph = currentChapter.paragraphs[pIndex]
-        pIndex--
-
-        that.element.prepend(paragraph)
-
-        if pIndex < 0
-          currentChapter.paragraphStartIndex = 0
-          break
-        
-        if that.element.height() > $("#backdrop").height() - 20
-          paragraph.remove()
-          currentChapter.paragraphStartIndex = pIndex + 2
-          break
+      @printPage()
 
     return
 
   return {
-    Display: Display,
-    Ch: Chapter.all
+    Display: Display
   }
 )()

@@ -41,6 +41,9 @@ group :assets do
   # Add these gems
 
   gem 'uglifier', '>= 1.0.3'
+  gem 'omniauth'
+  gem 'omniauth-google-oauth2'
+  gem 'koala'
 end
 
 gem 'devise'

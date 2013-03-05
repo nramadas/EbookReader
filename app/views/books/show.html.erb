@@ -1,12 +1,26 @@
 <div id="backdrop"></div>
 <div id="display"></div>
+<div id="back"></div>
+<div id="next"></div>
+<div id="prev"></div>
 
 <script>
   $(function() {
 
-    var book = new Book.Display($("#display"), <%= @book.id %>);
+    var book = new Book.Display($("#display"), <%= @book.id %>,
+                                <%= @book_ownership.id %>,
+                                <%= @book_ownership.current_chapter %>, 
+                                <%= @book_ownership.start_paragraph %>, 
+                                <%= @book_ownership.end_paragraph %>);
     book.loadBook();
 
+  });
 
+  $(window).on("unload", function() {
+    book.unloadBook();
+  });
+
+  $(window).on("beforeunload", function() {
+    book.unloadBook();
   });
 </script>

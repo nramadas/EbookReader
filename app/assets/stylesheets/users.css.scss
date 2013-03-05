@@ -2,11 +2,42 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#user-page {
-  margin: 2.5%;
+.notice, .alert {
+  position: fixed;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Open Sans Condensed', sans-serif;
+  font-size: 120%;
 }
 
-.book, .addfile {
+.alert {
+  color: yellow;
+}
+
+.notice {
+  color: red;
+}
+
+#user-page {
+  margin: 0;
+}
+
+#bookshelf {
+  position: absolute;
+  z-index: -1;
+  top: 5px;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  // max-width: 1319px;
+  height: 98%;
+  height: calc(100% - 5px);
+  background: image-url("shelf.png");
+  // background-size: 100% 273;
+}
+
+.book, .addfile, .upload, .signout {
   float: left;
   margin: 20px;
   width: 110px;
@@ -19,12 +50,44 @@
   overflow: hidden;
   color: #F6F3EE;
   text-decoration: none;
-  box-shadow: 0 0 10px 2px #A0A0A0;
+  box-shadow: 0 3px 10px 2px #664917;
 
   &:hover {
-    box-shadow: 0 0 10px 2px #C6C1B6;
+    box-shadow: 0 3px 10px 2px #956B23;
   }
 
+}
+
+.signout {
+  padding-top: 70px;
+  height: 143px;
+  font-size: 100%;
+  box-shadow: none;
+  background: image-url("door_closed2.png");
+
+  &:hover {
+    color: rgba(0,0,0,0);
+    box-shadow: none;
+    margin-top: 7px;
+    height: 178px;
+    background: image-url("door_open2.png");
+  }
+}
+
+.upload {
+  background: #C6C1B6;
+
+  .progress {
+    margin-top: 20px;
+    width: 100%;
+    height: 20px;
+
+    .bar {
+      height: 100%;
+      background: #F6F3EE;
+      border-radius: 5px;
+    }
+  }
 }
 
 .addfile {

@@ -33,6 +33,11 @@ class DeviseCreateUsers < ActiveRecord::Migration
       ## Token authenticatable
       # t.string :authentication_token
 
+      ## Omniauthable
+      t.string :provider
+      t.string :uid
+      t.string :access_token
+
 
       t.timestamps
     end

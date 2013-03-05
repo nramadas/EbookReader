@@ -1,6 +1,12 @@
-alert("hello");
-console.log("this");
 <% if @book %>
-  console.log("that");
-  $("#books").append(<%= link_to @book.title, book_path(@book), class: "book" %>);
+  var r = function() { return Math.floor(Math.random() * 100 + 100) };
+  
+  var book = $('<%= link_to @book.title, book_path(@book), class: "book" %>')
+  
+  $("#pro .upload:last-child").remove();
+  $("#books").append(book);
+  
+  book.css("background", function() {
+    return "rgb(" + r() + "," + r() + "," + r() + ")";
+  });
 <% end %>

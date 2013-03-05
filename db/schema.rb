@@ -16,8 +16,11 @@ ActiveRecord::Schema.define(:version => 20130302230608) do
   create_table "book_ownerships", :force => true do |t|
     t.integer  "book_id"
     t.integer  "user_id"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "current_chapter"
+    t.integer  "start_paragraph"
+    t.integer  "end_paragraph"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "books", :force => true do |t|
@@ -48,6 +51,9 @@ ActiveRecord::Schema.define(:version => 20130302230608) do
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "access_token"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
   end
