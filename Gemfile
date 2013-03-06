@@ -41,20 +41,19 @@ group :assets do
   # Add these gems
 
   gem 'uglifier', '>= 1.0.3'
-  gem 'omniauth'
-  gem 'omniauth-google-oauth2'
-  gem 'omniauth-dropbox'
-  gem 'dropbox-sdk'
-  gem 'koala'
 end
 
 gem 'devise'
-
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
+gem 'omniauth-dropbox'
+gem 'dropbox-sdk'
 gem 'jquery-rails'
 gem 'simple_form'
 gem 'epub-parser'
 gem "jquery-fileupload-rails"
 gem "thin"
+gem 'delayed_job_active_record'
 
 
 # To use ActiveModel has_secure_password

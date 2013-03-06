@@ -62,4 +62,34 @@ class User < ActiveRecord::Base
     new_book
   end
 
+  def search_dropbox
+    require 'dropbox_sdk'
+
+    if self.provider == "dropbox"
+      dbsession = DropboxSession.new("j5zlax407wga81i", "e6rctl0ix6n8y4t")
+
+      token = self.dropbox_token
+      secret = self.dropbox_secret
+
+      dbsession.set_access_token(token, secret)
+      client = DropboxClient.new(dbsession)
+
+      client.metadata('/')['contents'].each do |file|
+        content = client.get_file(file["path"])
+
+        File.open('book.epub', 'wb') {|f| f.puts content}
+        book = File.open('book.epub')
+
+        book = ActionDispatch::Http::UploadedFile.new({
+          filename: file["path"],
+          headers: "blank",
+          content_type: "blank",
+          tempfile: book
+          })
+
+        self.add_book(book)
+      end
+    end
+  end
+
 end
