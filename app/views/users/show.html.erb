@@ -1,5 +1,5 @@
 <div id="topshelf">
-  <div class="title">Simple Reader</div>
+  <%= link_to "Simple Reader", root_path, class: "title" %>
   <%= link_to(destroy_user_session_path, method: :delete, class: "signout") do %>
       Sign Out
       <div class="door"></div>

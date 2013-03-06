@@ -5,18 +5,19 @@
 .notice, .alert {
   position: fixed;
   display: block;
-  margin: 0 auto;
+  top: 13px;
+  left: 180px;
   text-align: center;
   font-family: 'Open Sans Condensed', sans-serif;
   font-size: 120%;
 }
 
 .alert {
-  color: yellow;
+  color: red;
 }
 
 .notice {
-  color: red;
+  color: #3593CA;
 }
 
 #topshelf {
@@ -26,6 +27,8 @@
   background-size: 100% 55px;
 
   .title {
+    display: block;
+    text-decoration: none;
     float: left;
     color: black;
     font-size: 30px;
@@ -46,14 +49,11 @@
   left: 0;
   margin: 0;
   width: 100%;
-  // max-width: 1319px;
-  height: 98%;
-  height: calc(100% - 5px);
   background: image-url("shelf4.png");
   background-size: 100% 273px;
 }
 
-.book, .addfile, .upload {
+.book, .addfile, .upload, .signupform, .forgotform, .googlelogin, .dropboxlogin {
   float: left;
   margin: 20px;
   width: 110px;
@@ -86,7 +86,7 @@
 
   .door {
     float: right;
-    width: 30px;
+    width: 18px;
     height: 30px;
     margin-right: 10px;
     background: image-url("door_closed.png");  
@@ -97,9 +97,10 @@
     .door {
       background: image-url("door_open.png");
       background-size: 100%;
-      width: 32px;
-      height: 32px;
-      margin-top: -2px;
+      width: 22px;
+      height: 34px;
+      margin-top: -1px;
+      margin-right: 9px;
     }
   }
 }
@@ -136,4 +137,53 @@
     height: 223px;
     cursor: pointer;
   }
+}
+
+.loginform {
+  float: left;
+  text-align: right;
+  height: 190px;
+  margin: 20px;
+  padding: 20px;
+  font-family: 'Open Sans Condensed', serif;
+  color: black;
+  background: #E2B25E;
+  border-radius: 2px;
+  box-shadow: 0 3px 10px 2px #664917;
+
+  .email, .password {
+    input {
+      margin-left: 10px;
+      width: 200px;
+    }
+  }
+}
+
+.signupform, .forgotform {
+  height: 190px;
+  background: #35CB6C;
+  font-family: 'Open Sans Condensed', serif;
+  font-size: 200%;
+}
+
+.forgotform {
+  background: #B84B35;
+}
+
+.googlelogin, .dropboxlogin {
+  font-family: 'Open Sans Condensed', serif;
+  font-size: 200%;
+  color: black;
+  img {
+    margin-top: 30px;
+    width: 110px;
+  }
+}
+
+.googlelogin {
+  background: #E8E8E8;
+}
+
+.dropboxlogin {
+  background: #3593CA;
 }

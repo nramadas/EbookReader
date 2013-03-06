@@ -43,6 +43,8 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
   gem 'omniauth'
   gem 'omniauth-google-oauth2'
+  gem 'omniauth-dropbox'
+  gem 'dropbox-sdk'
   gem 'koala'
 end
 
@@ -52,6 +54,7 @@ gem 'jquery-rails'
 gem 'simple_form'
 gem 'epub-parser'
 gem "jquery-fileupload-rails"
+gem "thin"
 
 
 # To use ActiveModel has_secure_password

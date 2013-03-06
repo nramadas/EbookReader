@@ -53,7 +53,8 @@ ActiveRecord::Schema.define(:version => 20130302230608) do
     t.datetime "confirmation_sent_at"
     t.string   "provider"
     t.string   "uid"
-    t.string   "access_token"
+    t.string   "dropbox_token"
+    t.string   "dropbox_secret"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
   end

@@ -215,6 +215,7 @@ Devise.setup do |config|
   # up on your models and hooks.
   OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE if Rails.env.development?
   config.omniauth :google_oauth2, '462731887875', 't97G7aVejpNclu98GUNFdEvN', { access_type: "offline", approval_prompt: "", scope: 'userinfo.email,userinfo.profile' }
+  config.omniauth :dropbox, 'j5zlax407wga81i', 'e6rctl0ix6n8y4t'
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -1,15 +1,54 @@
-<h2>Sign in</h2>
+<div id="topshelf">
+  <%= link_to "Simple Reader", root_path, class: "title" %>
+</div>
+<div id="bookshelf"></div>
 
-<%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-  <div class="form-inputs">
-    <%= f.input :email, :required => false, :autofocus => true %>
-    <%= f.input :password, :required => false %>
-    <%= f.input :remember_me, :as => :boolean if devise_mapping.rememberable? %>
-  </div>
+<div class="loginform">
+  <h1>Sign In</h1>
+  <%= simple_form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+    <div class="form-inputs">
+      <%= f.input :email, :required => false, :autofocus => true %>
+      <%= f.input :password, :required => false %>
+      <%= f.input :remember_me, :as => :boolean if devise_mapping.rememberable? %>
+    </div>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Sign in" %>
-  </div>
-<% end %>
+    <div class="form-actions">
+      <%= f.button :submit, "Sign in" %>
+    </div>
+  <% end %>
+</div>
 
-<%= render "devise/shared/links" %>
+<%= link_to "Not yet a user? Sign Up!", new_registration_path(resource_name), class: "signupform" %>
+
+<%= link_to "Forgot your password?", new_password_path(resource_name), class: "forgotform" %>
+
+<div style="clear:both;"></div>
+
+<%- if devise_mapping.omniauthable? %>
+  <%- resource_class.omniauth_providers.each do |provider| %>
+    <%= link_to omniauth_authorize_path(resource_name, provider) do %>
+      <% if provider == :google_oauth2 %>
+        <div class="googlelogin">
+          Sign in with
+          <img src=<%= image_path("google-logo.png") %> />
+        </div>
+      <% end %>
+      <% if provider == :dropbox %>
+        <div class="dropboxlogin">
+          Sign in with
+          <img src=<%= image_path("dropbox-logo.png") %> />
+        </div>
+      <% end %>
+    <% end %>
+  <% end -%>
+<% end -%>
+
+<script>
+  $(function() {
+    $("#bookshelf").height($(document).height() - 55 + "px");
+
+    $(window).resize(function() {
+      $("#bookshelf").height($(document).height() - 55 + "px");
+    });
+  });
+</script>

@@ -36,7 +36,8 @@ class DeviseCreateUsers < ActiveRecord::Migration
       ## Omniauthable
       t.string :provider
       t.string :uid
-      t.string :access_token
+      t.string :dropbox_token
+      t.string :dropbox_secret
 
 
       t.timestamps
