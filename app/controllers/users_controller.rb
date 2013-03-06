@@ -9,7 +9,11 @@ class UsersController < ApplicationController
     end
 
     @user = current_user
-    @user.delay.search_dropbox
+
+    if @user.checking_dropbox != 1
+      @user.update_attributes!(checking_dropbox: 1)
+      @user.delay.search_dropbox
+    end
   end
 
   def update

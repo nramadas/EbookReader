@@ -8,7 +8,8 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me,
-                  :provider, :uid, :dropbox_token, :dropbox_secret
+                  :provider, :uid, :dropbox_token, :dropbox_secret,
+                  :checking_dropbox
 
   has_many :book_ownerships
   has_many :books, through: :book_ownerships
@@ -88,6 +89,7 @@ class User < ActiveRecord::Base
           })
 
         self.add_book(book)
+        self.update_attributes!(checking_dropbox: 0)
       end
     end
   end

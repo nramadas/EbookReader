@@ -2,6 +2,12 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@mixin transitionals {
+  -webkit-transition: all 0.1s ease-in;
+  -moz-transition: all 0.1s ease-in;
+  -o-transition: all 0.1s ease-in;
+}
+
 .notice, .alert {
   position: fixed;
   display: block;
@@ -68,8 +74,10 @@
   text-decoration: none;
   box-shadow: 0 3px 10px 2px #664917;
 
+  @include transitionals;
+
   &:hover {
-    box-shadow: 0 3px 10px 2px #956B23;
+    box-shadow: 0 3px 20px 2px #553600;
   }
 
 }
@@ -153,8 +161,13 @@
 
   .email, .password {
     input {
+      background: #F6F3EE;
       margin-left: 10px;
       width: 200px;
+
+      @media screen and (max-width: 425px) {
+        width: 90px;
+      }
     }
   }
 }

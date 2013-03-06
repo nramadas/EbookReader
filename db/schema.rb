@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130306042034) do
+ActiveRecord::Schema.define(:version => 20130306175620) do
 
   create_table "book_ownerships", :force => true do |t|
     t.integer  "book_id"
@@ -73,6 +73,7 @@ ActiveRecord::Schema.define(:version => 20130306042034) do
     t.string   "dropbox_secret"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
+    t.integer  "checking_dropbox"
   end
 
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
