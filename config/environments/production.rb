@@ -21,7 +21,7 @@ EReader::Application.configure do
   config.assets.digest = true
 
   # Mailer
-  config.action_mailer.default_url_options = { host: 'simplepub.herokuapps.com' }
+  config.action_mailer.default_url_options = { host: 'simplepub.herokuapp.com' }
   ActionMailer::Base.smtp_settings = {
     address: "smtp.sendgrid.net",
     port:    "25",
