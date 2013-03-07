@@ -124,6 +124,7 @@ GEM
     mime-types (1.21)
     multi_json (1.6.1)
     multipart-post (1.2.0)
+    newrelic_rpm (3.5.8.72)
     nokogiri (1.5.6)
     oauth (0.4.7)
     oauth2 (0.8.1)
@@ -255,6 +256,7 @@ DEPENDENCIES
   jquery-fileupload-rails
   jquery-rails
   letter_opener
+  newrelic_rpm
   omniauth
   omniauth-dropbox
   omniauth-google-oauth2
