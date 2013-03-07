@@ -55,6 +55,7 @@ gem 'epub-parser'
 gem "jquery-fileupload-rails"
 gem "thin"
 gem 'delayed_job_active_record'
+gem 'newrelic_rpm'
 
 
 # To use ActiveModel has_secure_password
