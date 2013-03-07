@@ -20,6 +20,17 @@ EReader::Application.configure do
   # Generate digests for assets URLs
   config.assets.digest = true
 
+  # Mailer
+  config.action_mailer.default_url_options = { host: 'simplepub.herokuapps.com' }
+  ActionMailer::Base.smtp_settings = {
+    address: "smtp.sendgrid.net",
+    port:    "25",
+    authentication: :plain,
+    user_name: ENV['SENDGRID_USERNAME'],
+    password: ENV['SENDGRID_PASSWORD'],
+    domain: ENV['SENDGRID_DOMAIN']
+  }
+
   # Defaults to nil and saved in location specified by config.assets.prefix
   # config.assets.manifest = YOUR_PATH
 

@@ -23,12 +23,12 @@
     if prev == -1 # this chapter is before the current one
       that.paragraphIndex = that.totalParagraphs - 1
     else if prev == 0 # this chapter is the current one
-      that.startParagraph = parStart
-      that.endParagraph = parEnd
-      that.paragraphIndex = parStart
-      that.startWord = wordStart
-      that.endWord = wordEnd
-      that.wordIndex = wordStart
+      that.startParagraph = parStart if parStart
+      that.endParagraph = parEnd if parEnd
+      that.paragraphIndex = parStart if parStart
+      that.startWord = wordStart if wordStart
+      that.endWord = wordEnd if wordEnd
+      that.wordIndex = wordStart if wordStart
 
     return
 
@@ -134,17 +134,15 @@
 
       that.fetchBook(that.printPage)
 
-    @saveState = () ->
-      currentChapter = Chapter.all[Chapter.currentIndex]
-
+    @saveState = (chapter) ->
       $.ajax({
         url: "/book_ownerships/" + that.ownershipId,
         type: "PUT",
         data: "current_chapter=" + Chapter.currentIndex +
-              "&start_paragraph=" + currentChapter.startParagraph +
-              "&end_paragraph=" + currentChapter.endParagraph +
-              "&start_word=" + currentChapter.startWord +
-              "&end_word=" + currentChapter.endWord
+              "&start_paragraph=" + chapter.startParagraph +
+              "&end_paragraph=" + chapter.endParagraph +
+              "&start_word=" + chapter.startWord +
+              "&end_word=" + chapter.endWord
       })
 
     @fetchBook = (callback) ->
@@ -156,15 +154,6 @@
           Chapter.fetch(that.currentChapter, that.parStart,
                         that.parEnd, that.wordStart, that.wordEnd, callback)
       )
-
-    @getHeight = () =>
-      totheight = 0
-
-      @element.children().each(() ->
-        totheight += $(this)[0].scrollHeight
-      )
-
-      return totheight
 
     @printWords = (currentChapter, paragraphIndex, wordIndex, direction) =>
       currentParagraph = currentChapter.paragraphs[paragraphIndex]
@@ -255,6 +244,7 @@
       direction = 'topdown' unless direction
 
       currentChapter = Chapter.all[Chapter.currentIndex]
+      chapterDup = currentChapter
 
       if direction == 'topdown'
         currentChapter.startParagraph = currentChapter.paragraphIndex
@@ -277,7 +267,7 @@
         currentChapter.startParagraph = currentChapter.paragraphIndex
         currentChapter.startWord = currentChapter.wordIndex
 
-      @saveState()
+      @saveState(chapterDup)
 
     @nextPage = () =>
       currentChapter = Chapter.all[Chapter.currentIndex]
@@ -313,6 +303,8 @@
 
   return {
     Display: Display,
-    Ch: Chapter.all
+    Ch: Chapter.all,
+    Q: Chapter.currentIndex,
+    I: Chapter.ids
   }
 )()

@@ -1,19 +1,54 @@
-<h2>Change your password</h2>
+<div id="topshelf">
+  <%= link_to "Simple Pub", root_path, class: "title" %>
+</div>
+<div id="bookshelf"></div>
 
-<%= simple_form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f| %>
-  <%= f.error_notification %>
+<div class="loginform">
+  <h1>Change your password</h1>
+  <%= simple_form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f| %>
+    <%= f.error_notification %>
 
-  <%= f.input :reset_password_token, :as => :hidden %>
-  <%= f.full_error :reset_password_token %>
+    <%= f.input :reset_password_token, :as => :hidden %>
+    <%= f.full_error :reset_password_token %>
+    <div class="form-inputs">
+      <%= f.input :password, :label => "New password", :required => true, :autofocus => true %>
+      <%= f.input :password_confirmation, :label => "Confirm your new password", :required => true %>
+    </div>
+    <div class="form-actions">
+      <%= f.button :submit, "Change my password" %>
+    </div>
+  <% end %>
+</div>
 
-  <div class="form-inputs">
-    <%= f.input :password, :label => "New password", :required => true, :autofocus => true %>
-    <%= f.input :password_confirmation, :label => "Confirm your new password", :required => true %>
-  </div>
+<%= link_to "Not yet a user? Sign Up!", new_registration_path(resource_name), class: "signupform" %>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Change my password" %>
-  </div>
-<% end %>
+<div style="clear:both;"></div>
 
-<%= render "devise/shared/links" %>
+<%- if devise_mapping.omniauthable? %>
+  <%- resource_class.omniauth_providers.each do |provider| %>
+    <%= link_to omniauth_authorize_path(resource_name, provider) do %>
+      <% if provider == :google_oauth2 %>
+        <div class="googlelogin">
+          Sign in with
+          <img src=<%= image_path("google-logo.png") %> />
+        </div>
+      <% end %>
+      <% if provider == :dropbox %>
+        <div class="dropboxlogin">
+          Sign in with
+          <img src=<%= image_path("dropbox-logo.png") %> />
+        </div>
+      <% end %>
+    <% end %>
+  <% end -%>
+<% end -%>
+
+<script>
+  $(function() {
+    $("#bookshelf").height($(document).height() - 55 + "px");
+
+    $(window).resize(function() {
+      $("#bookshelf").height($(document).height() - 55 + "px");
+    });
+  });
+</script>
