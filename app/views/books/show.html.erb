@@ -1,5 +1,6 @@
 <div id="backdrop"></div>
 <div id="display"></div>
+<div id="wordarea"></div>
 <div id="back">
   <div class="backDisplay">Return to bookshelf</div>
 </div>
@@ -12,25 +13,35 @@
 
 <script>
   $(function() {
+    WebFontConfig = {
+      google: { families: [ 'Poly::latin', 'Open+Sans+Condensed:300:latin' ] },
+      active: function() {
+        var book = new Book.Display($("#display"), <%= @book.id %>,
+                                    <%= @book_ownership.id %>,
+                                    <%= @book_ownership.current_chapter %>, 
+                                    <%= @book_ownership.start_paragraph %>, 
+                                    <%= @book_ownership.end_paragraph %>,
+                                    <%= @book_ownership.start_word %>,
+                                    <%= @book_ownership.end_word %>);
+        book.loadBook();
+      }
+    };
 
-    var book = new Book.Display($("#display"), <%= @book.id %>,
-                                <%= @book_ownership.id %>,
-                                <%= @book_ownership.current_chapter %>, 
-                                <%= @book_ownership.start_paragraph %>, 
-                                <%= @book_ownership.end_paragraph %>);
-    book.loadBook();
+    (function() {
+      var wf = document.createElement('script');
+      wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+        '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+      wf.type = 'text/javascript';
+      wf.async = 'true';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(wf, s);
+    })();
+
+    $("body").css("overflow", "hidden");
 
     $("#back").children().hide();
     $("#next").children().hide();
     $("#prev").children().hide();
 
-  });
-
-  $(window).on("unload", function() {
-    book.unloadBook();
-  });
-
-  $(window).on("beforeunload", function() {
-    book.unloadBook();
   });
 </script>

@@ -32,8 +32,8 @@ class Book < ActiveRecord::Base
                                       .gsub("\"", "&quot;")
                                       .gsub(/<a(.*?)>/, "")
                                       .gsub("</a>", "")
-                                      .gsub(/<img(.*?)>/, "")
-                                      .gsub("<br>", "")
+                                      .gsub(/<img(.*?)>/, " ")
+                                      .gsub("<br>", " ")
 
       next if chapter.empty?
 

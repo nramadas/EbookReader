@@ -6,6 +6,8 @@ class CreateBookOwnerships < ActiveRecord::Migration
       t.integer :current_chapter
       t.integer :start_paragraph
       t.integer :end_paragraph
+      t.integer :start_word
+      t.integer :end_word
 
       t.timestamps
     end

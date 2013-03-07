@@ -3,25 +3,32 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 @Book = (() ->
-  Chapter = (text, prev, parStart, parEnd) ->
+  Chapter = (text, prev, parStart, parEnd, wordStart, wordEnd) ->
     that = this
 
-    @text = text
-    @paragraphStartIndex = 0
-    @paragraphEndIndex = 0
+    @startParagraph = 0
+    @endParagraph = 0
+    @startWord = 0
+    @endWord = 0
+    @paragraphIndex = 0
+    @wordIndex = 0
     @totalParagraphs = 0
     @paragraphs = []
 
-    $(@text).each(() ->
+    $(text).each(() ->
       that.paragraphs.push(this) if $(this).html()
       that.totalParagraphs++
     )
 
     if prev == -1 # this chapter is before the current one
-      that.paragraphStartIndex = that.totalParagraphs - 1
+      that.paragraphIndex = that.totalParagraphs - 1
     else if prev == 0 # this chapter is the current one
-      that.paragraphStartIndex = parStart
-      that.paragraphEndIndex = parEnd
+      that.startParagraph = parStart
+      that.endParagraph = parEnd
+      that.paragraphIndex = parStart
+      that.startWord = wordStart
+      that.endWord = wordEnd
+      that.wordIndex = wordStart
 
     return
 
@@ -29,7 +36,7 @@
 
   Chapter.all = []
 
-  Chapter.currentIndex = 3
+  Chapter.currentIndex = 0
 
   Chapter.fetchRemaining = (val, skip) ->
     unless val >= Chapter.ids.length
@@ -48,12 +55,13 @@
 
     return
 
-  Chapter.fetch = (currentChapter, parStart, parEnd, callback) ->
+  Chapter.fetch = (currentChapter, parStart, parEnd, wordStart, wordEnd, callback) ->
     $.getJSON(
       "/chapters/" + Chapter.ids[Chapter.currentIndex] + ".json",
       (data) ->
         Chapter.all[Chapter.currentIndex] = new Chapter(data.text, 0,
-                                                        parStart, parEnd)
+                                                        parStart, parEnd,
+                                                        wordStart, wordEnd)
 
         skip = Chapter.currentIndex # captured incase the callback changes it
 
@@ -64,7 +72,7 @@
 
     return
 
-  Display = (element, bookId, ownershipId, currentChapter, parStart, parEnd) ->
+  Display = (element, bookId, ownershipId, currentChapter, parStart, parEnd, wordStart, wordEnd) ->
     that = this
 
     @element = element
@@ -73,6 +81,8 @@
     @chapterIds = null
     @parStart = parStart
     @parEnd = parEnd
+    @wordStart = wordStart
+    @wordEnd = wordEnd
     @timer = null
 
     @bindKeys = () ->
@@ -119,7 +129,7 @@
       @bindMouse()
 
       $(window).resize(() ->
-        that.printPage()
+        that.printPage('topdown')
       )
 
       that.fetchBook(that.printPage)
@@ -131,8 +141,10 @@
         url: "/book_ownerships/" + that.ownershipId,
         type: "PUT",
         data: "current_chapter=" + Chapter.currentIndex +
-              "&start_paragraph=" + currentChapter.paragraphStartIndex +
-              "&end_paragraph=" + currentChapter.paragraphEndIndex
+              "&start_paragraph=" + currentChapter.startParagraph +
+              "&end_paragraph=" + currentChapter.endParagraph +
+              "&start_word=" + currentChapter.startWord +
+              "&end_word=" + currentChapter.endWord
       })
 
     @fetchBook = (callback) ->
@@ -142,88 +154,165 @@
           that.chapterIds = data.chapter_ids
           Chapter.ids = data.chapter_ids
           Chapter.fetch(that.currentChapter, that.parStart,
-                        that.parEnd, callback)
+                        that.parEnd, that.wordStart, that.wordEnd, callback)
       )
 
-    @printPage = (inChapter) =>
+    @getHeight = () =>
+      totheight = 0
+
+      @element.children().each(() ->
+        totheight += $(this)[0].scrollHeight
+      )
+
+      return totheight
+
+    @printWords = (currentChapter, paragraphIndex, wordIndex, direction) =>
+      currentParagraph = currentChapter.paragraphs[paragraphIndex]
+      words = $(currentParagraph).html().split(" ")
+      wordParagraph = $(currentParagraph).clone().empty()
+      wordParagraph.css("display", "inline")
+
+      if direction == 'bottomup' && wordIndex == 0
+        wordIndex = words.length - 1
+
+      if direction == 'topdown'
+        @element.append(wordParagraph)
+      else
+        @element.prepend(wordParagraph)
+
+      while true
+        word = words[wordIndex] + " "
+
+        # Check if the word will fit:
+        if direction == 'topdown'
+          $("#wordarea").append(word)
+        else
+          $("#wordarea").prepend(word)
+
+        wordWidth = $("#wordarea").width()
+        wordHeight = $("#wordarea").height()
+
+        if (@element.height() + wordHeight > $("#backdrop").height() - 60) &&
+           (wordWidth > @element.width() - 40)
+          currentChapter.wordIndex = wordIndex
+          if direction != 'topdown'
+            currentChapter.wordIndex++
+
+          break
+        else if wordIndex >= words.length && direction == 'topdown'
+          currentChapter.wordIndex = 0
+          currentChapter.paragraphIndex++
+          break
+        else if wordIndex < 0 && direction != 'topdown'
+          currentChapter.wordIndex = 0
+          currentChapter.paragraphIndex--
+          break
+        else
+          beforeHeight = @element.height()
+          if direction == 'topdown'
+            wordParagraph.append(word)
+            wordIndex++
+          else
+            wordParagraph.prepend(word)
+            wordIndex--
+
+          if @element.height() > beforeHeight
+            $("#wordarea").empty()
+            $("#wordarea").append(word)
+
+
+    @printParagraphs = (currentChapter, paragraphIndex, wordIndex, direction) =>
+      while true
+        paragraph = currentChapter.paragraphs[paragraphIndex]
+
+        if direction == 'topdown'
+          @element.append(paragraph)
+        else 
+          @element.prepend(paragraph)
+
+        if @element.height() > $("#backdrop").height() - 60
+          paragraph.remove()
+          @printWords(currentChapter, paragraphIndex, wordIndex, direction)
+          currentChapter.paragraphIndex = paragraphIndex
+          break
+        else if paragraphIndex >= currentChapter.totalParagraphs &&
+                direction == 'topdown'
+          Chapter.currentIndex++
+          currentChapter.paragraphIndex = paragraphIndex
+          break
+        else if paragraphIndex < 0 && direction != 'topdown'
+          currentChapter.paragraphIndex = 0
+          break
+        else
+          if direction == 'topdown'
+            paragraphIndex++
+          else
+            paragraphIndex--
+
+    @printPage = (direction) =>
       @element.empty()
+
+      direction = 'topdown' unless direction
 
       currentChapter = Chapter.all[Chapter.currentIndex]
 
-      if currentChapter.paragraphEndIndex >= currentChapter.paragraphStartIndex
-        pIndex = currentChapter.paragraphStartIndex
-        currentChapter.paragraphStartIndex = pIndex
-
-        while true
-          paragraph = currentChapter.paragraphs[pIndex]
-          pIndex++
-
-          @element.append(paragraph)
-
-          if @element.height() > $("#backdrop").height() - 50
-            paragraph.remove()
-            currentChapter.paragraphEndIndex = pIndex - 1
-            break
-
-          if pIndex >= currentChapter.totalParagraphs
-            currentChapter.paragraphEndIndex = currentChapter.totalParagraphs
-            break
-
+      if direction == 'topdown'
+        currentChapter.startParagraph = currentChapter.paragraphIndex
+        currentChapter.startWord = currentChapter.wordIndex
       else
-        currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex
-        pIndex = currentChapter.paragraphStartIndex - 1
+        currentChapter.endParagraph = currentChapter.paragraphIndex
+        currentChapter.endWord = currentChapter.wordIndex + 1
 
-        while true
-          paragraph = currentChapter.paragraphs[pIndex]
-          pIndex--
+      if currentChapter.wordIndex != 0
+        @printWords(currentChapter, currentChapter.paragraphIndex,
+                    currentChapter.wordIndex, direction)
 
-          @element.prepend(paragraph)
+      @printParagraphs(currentChapter, currentChapter.paragraphIndex,
+                       currentChapter.wordIndex, direction)
 
-          if pIndex < 0
-            currentChapter.paragraphStartIndex = 0
-            break
-          
-          if @element.height() > $("#backdrop").height() - 50
-            paragraph.remove()
-            currentChapter.paragraphStartIndex = pIndex + 2
-            break
+      if direction == 'topdown'
+        currentChapter.endParagraph = currentChapter.paragraphIndex
+        currentChapter.endWord = currentChapter.wordIndex
+      else
+        currentChapter.startParagraph = currentChapter.paragraphIndex
+        currentChapter.startWord = currentChapter.wordIndex
 
       @saveState()
 
     @nextPage = () =>
-      @element.empty()
-
       currentChapter = Chapter.all[Chapter.currentIndex]
 
-      if currentChapter.paragraphEndIndex >= currentChapter.totalParagraphs
-        unless Chapter.currentIndex == Chapter.all.length - 1
-          Chapter.currentIndex++
-
-        currentChapter = Chapter.all[Chapter.currentIndex]
-
-      currentChapter.paragraphStartIndex = currentChapter.paragraphEndIndex
-
-      @printPage()
+      currentChapter.paragraphIndex = currentChapter.endParagraph
+      currentChapter.wordIndex = currentChapter.endWord
+      @printPage("topdown")
 
     @previousPage = () =>
-      @element.empty()
-
       currentChapter = Chapter.all[Chapter.currentIndex]
 
-      if currentChapter.paragraphStartIndex <= 0
-        currentChapter.paragraphEndIndex = 0
-        if Chapter.currentIndex > 0
-          Chapter.currentIndex--
-
-        return @printPage()
-      
-      currentChapter.paragraphEndIndex = currentChapter.paragraphStartIndex - 1
-
-      @printPage()
+      if currentChapter.startParagraph <= 0 && currentChapter.startWord <= 0
+        Chapter.currentIndex--
+        currentChapter = Chapter.all[Chapter.currentIndex]
+        currentChapter.paragraphIndex = currentChapter.paragraphs.length
+        currentChapter.wordIndex = 0
+        @printPage("bottomup")
+        Chapter.currentIndex++
+        currentChapter = Chapter.all[Chapter.currentIndex]
+        currentChapter.endParagraph = 0
+        currentChapter.endWord = 0
+      else
+        if currentChapter.startWord == 0
+          currentChapter.paragraphIndex = currentChapter.startParagraph - 1
+          currentChapter.wordIndex = 0
+        else
+          currentChapter.paragraphIndex = currentChapter.startParagraph
+          currentChapter.wordIndex = currentChapter.startWord - 1
+        
+        @printPage("bottomup")
 
     return
 
   return {
-    Display: Display
+    Display: Display,
+    Ch: Chapter.all
   }
 )()
